@@ -12,6 +12,7 @@
   "description": "",
   "dependencies": {
     "autoprefixer": "^10.4.20",
+    "bowser": "^2.11.0",
     "flowbite": "^2.5.2",
     "postcss": "^8.4.49",
     "postcss-cli": "^11.0.0",

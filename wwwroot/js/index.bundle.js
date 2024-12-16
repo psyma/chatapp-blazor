@@ -1181,7 +1181,7 @@ eval("//# sourceMappingURL=declarations.js.map\n\n//# sourceURL=webpack://chatap
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var flowbite__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! flowbite */ \"./node_modules/flowbite/lib/esm/index.js\");\n\n\nconsole.log(\"Hello World!\")\n\n//# sourceURL=webpack://chatapp-dotnet-mvc/./wwwroot/js/site.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var flowbite__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! flowbite */ \"./node_modules/flowbite/lib/esm/index.js\");\n\n\nconst user = document.getElementById(\"user\");\nuser.addEventListener(\"click\", (e) => {\n    const sidebarBtn = document.getElementById(\"default-sidebar-button\")\n    console.log(sidebarBtn.click())\n})\n\n//# sourceURL=webpack://chatapp-dotnet-mvc/./wwwroot/js/site.js?");
 
 /***/ })
 
