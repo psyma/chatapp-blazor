@@ -14,6 +14,7 @@
 @inject ILogger<Register> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <PageTitle>Register</PageTitle>
 
@@ -63,6 +64,20 @@
 
     private string? Message => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description))}";
 
+    protected override async Task OnInitializedAsync()
+    {  
+        // Get the current authentication state
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // Check if the user is authenticated
+        if (user.Identity != null && user.Identity.IsAuthenticated)
+        {
+            // Redirect to home or another page
+            NavigationManager.NavigateTo("/");
+        }
+    }
+    
     public async Task RegisterUser(EditContext editContext)
     {
         var user = CreateUser();
