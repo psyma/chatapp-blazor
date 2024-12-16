@@ -1,4 +1,4 @@
-# Simple chat application using ASP.NET MVC & .NET 9
+# Simple chat application using Blazor & .NET 9
 
 # Features
 ```
