@@ -1,0 +1,6 @@
+﻿services:
+  chatapp-blazor:
+    image: chatapp-blazor
+    build:
+      context: .
+      dockerfile: Dockerfile
