@@ -23,9 +23,9 @@
                     </a>
                     <div class="pr-1">
                         <a class="inline-flex text-gray-800 hover:text-gray-900" href="#">
-                            <h2 class="text-xl leading-snug font-bold">@_currentUser.UserName</h2>
+                            <h2 class="text-xl leading-snug font-bold">@_currentUser?.UserName</h2>
                         </a>
-                        <a class="block text-sm font-medium hover:text-indigo-500" href="#">@_currentUser.Email</a>
+                        <a class="block text-sm font-medium hover:text-indigo-500" href="#">@_currentUser?.Email</a>
                     </div>
                 </div> 
                 <div class="nav-item px-3">
@@ -57,7 +57,7 @@
             <div class="py-3 px-4">
                 <h3 class="text-xs font-semibold uppercase text-gray-400 mb-1">Chats</h3>
                 <div class="divide-y pb-6 h-full divide-gray-200">
-                    @foreach (var user in _users.Where(user => user.Id != _currentUser.Id))
+                    @foreach (var user in _users.Where(user => user.Id != _currentUser?.Id))
                     {
                         <button @onclick="(() => OnUserClick(user.Id))" class="w-full text-left py-2 focus:outline-none focus-visible:bg-indigo-50 hover:bg-gray-200 p-1">
                             <div class="flex items-center">
@@ -102,7 +102,7 @@
                 <div class="flex flex-col space-y-2">
                     @foreach (var message in _messages)
                     {
-                        if (message.SenderId == _currentUser.Id)
+                        if (message.SenderId == _currentUser?.Id)
                         {
                             <div class="flex justify-end">
                                 <div class="bg-blue-500 text-white p-2.5 rounded-lg max-w-xs border">
@@ -143,20 +143,19 @@
     
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync(); 
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
- 
-        if (user == null || !user.Identity.IsAuthenticated)
+
+        if (user?.Identity?.IsAuthenticated != true)
         {
-            NavigationManager.NavigateTo("/Account/Login", true);
-        }
-        
-        NavigationManager.LocationChanged += OnLocationChanged;
+            NavigationManager.NavigateTo("/Account/Login", forceLoad: true);
+        } 
         
         _users = await UserManager.Users.ToListAsync(); 
-        _currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-        _currentUser = _users.Find(u => u.Email == user.Identity.Name);
+        _currentUser = _users.Find(u => u.Email == user?.Identity?.Name);
         
+        NavigationManager.LocationChanged += OnLocationChanged;
+        _currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         StateHasChanged();
     }   
     

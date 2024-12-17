@@ -46,8 +46,7 @@ window.receivedMessage = (senderId, receiverId, content) => {
 }
 
 window.sendMessage = async (senderId, receiverId, content) => {
-    await connection.send("SendMessage", senderId, receiverId, content)
-    console.log(dotNet)
+    await connection.send("SendMessage", senderId, receiverId, content) 
 }
 
 window.initHubConnection = async (userId)  => {
