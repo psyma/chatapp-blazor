@@ -1,8 +1,7 @@
 ﻿@page "/"
 
 @using chatapp_blazor.Models
-@using Microsoft.AspNetCore.Identity 
-@using Microsoft.AspNetCore.SignalR
+@using Microsoft.AspNetCore.Identity
 
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
@@ -90,7 +89,7 @@
                 </button>
                 <div class="flex items-center">
                     <img class="rounded-full items-start flex-shrink-0 mr-2" src="/assets/personiconblack.png" width="32" height="32" alt="Nhu Cassel"/>
-                    <span>Chat App</span>
+                    <span>@_targetUser.UserName</span>
                 </div>
             </div>
         </div>
