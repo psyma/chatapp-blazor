@@ -1,16 +1,16 @@
-using chatapp_blazor.Data;
+using chatapp_blazor.Models;
 using Microsoft.AspNetCore.SignalR;
 
 namespace chatapp_blazor.Hubs;
 
 public class ChatHub : Hub
 {
-    private readonly ApplicationDbContext _dbContext;
-    private readonly ApplicationUtils _applicationUtils;
-    public ChatHub(ApplicationDbContext dbContext, ApplicationUtils applicationUtils)
+    private readonly DataDbContext _dbContext;
+    private readonly Utils _utils;
+    public ChatHub(DataDbContext dbContext, Utils utils)
     {
         _dbContext = dbContext;
-        _applicationUtils = applicationUtils;
+        _utils = utils;
     }
     
     public async Task Send(string sender, string receiver, string message)
@@ -24,8 +24,8 @@ public class ChatHub : Hub
         string? id = Context.GetHttpContext()?.Request.Query["userId"];
         if (id != null)
         {
-            _applicationUtils.Ids.Add(id);
-            await Clients.All.SendAsync("ConnectedUsers", _applicationUtils.Ids);
+            _utils.Ids.Add(id);
+            await Clients.All.SendAsync("ConnectedUsers", _utils.Ids);
         }
     }
 
@@ -34,7 +34,7 @@ public class ChatHub : Hub
         string? id = Context.GetHttpContext()?.Request.Query["userId"];
         if (id != null)
         {
-            _applicationUtils.Ids.Remove(id);
+            _utils.Ids.Remove(id);
             await Clients.All.SendAsync("DisconnectedUser", id);
         }
     }

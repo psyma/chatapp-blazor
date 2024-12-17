@@ -1,6 +1,6 @@
-namespace chatapp_blazor.Data;
+namespace chatapp_blazor.Models;
 
-public class ApplicationMessage
+public class Message
 {
     public int Id { get; set; }
     public required string SenderId { get; set; }

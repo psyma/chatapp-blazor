@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Identity;
-using chatapp_blazor.Data;
+using chatapp_blazor.Models;
 
 namespace chatapp_blazor.Components.Account;
 
 internal sealed class IdentityUserAccessor(
-    UserManager<ApplicationUser> userManager,
+    UserManager<User> userManager,
     IdentityRedirectManager redirectManager)
 {
-    public async Task<ApplicationUser> GetRequiredUserAsync(HttpContext context)
+    public async Task<User> GetRequiredUserAsync(HttpContext context)
     {
         var user = await userManager.GetUserAsync(context.User);
 
