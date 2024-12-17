@@ -1,4 +1,4 @@
-# Simple real time chat application using Blazor & .NET 9
+# Simple real time chat app using Blazor & .NET 9
 
 # Features
 ```
