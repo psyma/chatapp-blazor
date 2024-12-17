@@ -60,7 +60,11 @@
                     {
                         <button @onclick="(() => OnUserClick(user.Id))" class="w-full text-left py-2 focus:outline-none focus-visible:bg-indigo-50 hover:bg-gray-200 p-1">
                             <div class="flex items-center">
-                                <img class="rounded-full items-start flex-shrink-0 mr-3" src="/assets/personiconblack.png" width="32" height="32" alt="Nhu Cassel"/>
+                                <img class="hidden rounded-full items-start flex-shrink-0 mr-3" src="/assets/personiconblack.png" width="32" height="32" alt="Nhu Cassel"/>
+                                <div class="relative">
+                                    <img class="w-10 h-10 rounded-full mr-3" src="/assets/personiconblack.png" alt="personiconblack">
+                                    <span id="@user.Id-online-status" class="bottom-0 left-7 absolute  w-3.5 h-3.5 bg-red-400 border-2 border-white dark:border-gray-800 rounded-full"></span>
+                                </div>
                                 <div>
                                     <h4 class="text-sm font-semibold text-gray-900">@user.UserName</h4>
                                     <div class="text-[13px]">Hello Lauren 👋, · 24 Mar</div>
@@ -238,6 +242,7 @@
         if (isFirstRender)
         {
             await JsRuntime.InvokeVoidAsync("initializeFlowbite");
+            await JsRuntime.InvokeVoidAsync("initHubConnection", _currentUser.Id);
         }
     } 
 

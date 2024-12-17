@@ -18,15 +18,34 @@ window.onSidebarUserClick = async () => {
         sidebarBtn.click()
     }
 }
-async function initHubConnection() {
-    let connection = new signalR.HubConnectionBuilder().withUrl("/_chatapp?userId=myid").build() 
+
+window.connectedUsers = (ids) => {
+    for (const id of ids) {
+        const element = document.getElementById(id + "-online-status")
+        if (element) {
+            element.classList.remove("bg-red-400")
+            element.classList.add("bg-green-400")
+        }
+    }
+}
+
+window.disconnectedUsers = (id) => {
+    const element = document.getElementById(id + "-online-status")
+    if (element) {
+        element.classList.remove("bg-green-400")
+        element.classList.add("bg-red-400")
+    }
+}
+
+window.initHubConnection = async (userId)  => {
+    let connection = new signalR.HubConnectionBuilder().withUrl(`/_chatapp?userId=${userId}`).build() 
+    
+    connection.on("ConnectedUsers", connectedUsers)
+    connection.on("DisconnectedUser", disconnectedUsers)
+    
     await connection.start() 
     
     if (connection.connectionId) {
-        console.log("Connected")
-    
-    }
-    await connection.send("Send", "sender", "receiver", "message")
+        console.log("Connected") 
+    } 
 }
-
-await initHubConnection()

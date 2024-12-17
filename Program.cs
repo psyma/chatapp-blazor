@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using chatapp_blazor.Components;
 using chatapp_blazor.Components.Account;
 using chatapp_blazor.Data;
-using chatapp_blazor.Hubs;
+using chatapp_blazor.Hubs; 
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,7 +36,7 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
-
+builder.Services.AddSingleton<ApplicationUtils>();
 builder.Services.AddSignalR();
 
 var app = builder.Build();
