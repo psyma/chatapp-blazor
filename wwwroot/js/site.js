@@ -1,6 +1,7 @@
 import "flowbite"  
+import Bowser from "bowser" 
 import { initFlowbite } from "flowbite"
-import Bowser from "bowser"
+import * as signalR from '@microsoft/signalr'
 
 window.initializeFlowbite = () => {
     initFlowbite();
@@ -17,4 +18,15 @@ window.onSidebarUserClick = async () => {
         sidebarBtn.click()
     }
 }
+async function initHubConnection() {
+    let connection = new signalR.HubConnectionBuilder().withUrl("/_chatapp?userId=myid").build() 
+    await connection.start() 
+    
+    if (connection.connectionId) {
+        console.log("Connected")
+    
+    }
+    await connection.send("Send", "sender", "receiver", "message")
+}
 
+await initHubConnection()
