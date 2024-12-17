@@ -2,10 +2,12 @@
 
 @using chatapp_blazor.Models
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
 
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject DataDbContext DataDbContext
 @inject UserManager<User> UserManager
 @inject IJSRuntime JsRuntime
 
@@ -78,144 +80,66 @@
 </aside>
 
 <div class="sm:ml-96">
-    <div class="bg-white h-[100dvh] flex flex-col max-w-full mx-auto">
-        <div class="bg-black p-3 text-white flex justify-between items-center"> 
-            <div class="flex items-center gap-3">
-                <button id="default-sidebar-btn" data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" class="inline-flex items-center p-2 mt-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
-                    <span class="sr-only">Open sidebar</span>
-                    <svg class="w-6 h-6 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12l4-4m-4 4 4 4"/>
-                    </svg>
-                </button>
-                <div class="flex items-center">
-                    <img class="rounded-full items-start flex-shrink-0 mr-2" src="/assets/personiconblack.png" width="32" height="32" alt="Nhu Cassel"/>
-                    <span>@_targetUser.UserName</span>
+    @if (_targetUser != null)
+    {
+        <div class="bg-white h-[100dvh] flex flex-col max-w-full mx-auto">
+            <div class="bg-black p-3 text-white flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <button id="default-sidebar-btn" data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" class="inline-flex items-center p-2 mt-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+                        <span class="sr-only">Open sidebar</span>
+                        <svg class="w-6 h-6 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12l4-4m-4 4 4 4"/>
+                        </svg>
+                    </button>
+                    <div class="flex items-center">
+                        <img class="rounded-full items-start flex-shrink-0 mr-2" src="/assets/personiconblack.png" width="32" height="32" alt="Nhu Cassel"/>
+                        <span>@_targetUser.UserName</span>
+                    </div>
                 </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-4">
+                <div class="flex flex-col space-y-2">
+                    @foreach (var message in _messages)
+                    {
+                        if (message.SenderId == _currentUser.Id)
+                        {
+                            <div class="flex justify-end">
+                                <div class="bg-blue-500 text-white p-2.5 rounded-lg max-w-xs border">
+                                    @message.Content
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="flex items-end">
+                                <img class="rounded-full items-start flex-shrink-0 mr-2 object-fit-contain" src="/assets/personiconblack.png" width="32" height="32" alt="Nhu Cassel"/>
+                                <div class="bg-white text-black p-2.5 rounded-lg max-w-xs border">
+                                    @message.Content
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+
+            <div class="bg-white p-3 flex items-center border-top">
+                <input value="@_content" @oninput="OnMessageInput" type="text" placeholder="Type your message..." class="flex-1 border rounded px-4 py-2 focus:outline-none">
+                <button @onclick="OnSendButtonClick" class="bg-blue-500 text-white rounded-full p-2 ml-2 hover:bg-blue-600 focus:outline-none">
+                    <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M11.5003 12H5.41872M5.24634 12.7972L4.24158 15.7986C3.69128 17.4424 3.41613 18.2643 3.61359 18.7704C3.78506 19.21 4.15335 19.5432 4.6078 19.6701C5.13111 19.8161 5.92151 19.4604 7.50231 18.7491L17.6367 14.1886C19.1797 13.4942 19.9512 13.1471 20.1896 12.6648C20.3968 12.2458 20.3968 11.7541 20.1896 11.3351C19.9512 10.8529 19.1797 10.5057 17.6367 9.81135L7.48483 5.24303C5.90879 4.53382 5.12078 4.17921 4.59799 4.32468C4.14397 4.45101 3.77572 4.78336 3.60365 5.22209C3.40551 5.72728 3.67772 6.54741 4.22215 8.18767L5.24829 11.2793C5.34179 11.561 5.38855 11.7019 5.407 11.8459C5.42338 11.9738 5.42321 12.1032 5.40651 12.231C5.38768 12.375 5.34057 12.5157 5.24634 12.7972Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+                </button>
             </div>
         </div>
-
-        <div class="flex-1 overflow-y-auto p-4">
-            <div class="flex flex-col space-y-2">
-                <!-- Messages go here -->
-                <!-- Example Message -->
-                <div class="flex justify-end">
-                    <div class="bg-blue-500 text-white p-2.5 rounded-lg max-w-xs border">
-                        Hey, how's your day going?
-                    </div>
-                </div>
-
-                <!-- Example Received Message -->
-                <div class="flex items-end">
-                    <img class="rounded-full items-start flex-shrink-0 mr-2 object-fit-contain" src="/assets/personiconblack.png" width="32" height="32" alt="Nhu Cassel"/>
-                    <div class="bg-white text-black p-2.5 rounded-lg max-w-xs border">
-                        Not too bad, just a bit busy. How about you?
-                    </div>
-                </div>
-                <!-- Example Message -->
-                <div class="flex justify-end">
-                    <div class="bg-blue-500 text-white p-2.5 rounded-lg max-w-xs border">
-                        I'm good, thanks. Anything exciting happening?
-                    </div>
-                </div>
-
-                <!-- Example Received Message -->
-                <div class="flex items-end">
-                    <img class="rounded-full items-start flex-shrink-0 mr-2 object-fit-contain" src="/assets/personiconblack.png" width="32" height="32" alt="Nhu Cassel"/>
-                    <div class="bg-white text-black p-2.5 rounded-lg max-w-xs border">
-                        Not really, just the usual. Work and errands.
-                    </div>
-                </div>
-                <!-- Example Message -->
-                <div class="flex justify-end">
-                    <div class="bg-blue-500 text-white p-2.5 rounded-lg max-w-xs border">
-                        Sounds like a typical day. Got any plans for the weekend?
-                    </div>
-                </div>
-
-                <!-- Example Received Message -->
-                <div class="flex items-end">
-                    <img class="rounded-full items-start flex-shrink-0 mr-2 object-fit-contain" src="/assets/personiconblack.png" width="32" height="32" alt="Nhu Cassel"/>
-                    <div class="bg-white text-black p-2.5 rounded-lg max-w-xs border">
-                        Not yet, I'm hoping to relax and maybe catch up on some reading. How about you?
-                    </div>
-                </div>
-                <!-- Example Message -->
-                <div class="flex justify-end">
-                    <div class="bg-blue-500 text-white p-2.5 rounded-lg max-w-xs border">
-                        I might go hiking if the weather's nice. Otherwise, just taking it easy
-                    </div>
-                </div>
-
-                <!-- Example Received Message -->
-                <div class="flex items-end">
-                    <img class="rounded-full items-start flex-shrink-0 mr-2 object-fit-contain" src="/assets/personiconblack.png" width="32" height="32" alt="Nhu Cassel"/>
-                    <div class="bg-white text-black p-2.5 rounded-lg max-w-xs border">
-                        Hiking sounds fun. Hope the weather cooperates for you!
-                    </div>
-                </div>
-                <!-- Example Message -->
-                <div class="flex justify-end">
-                    <div class="bg-blue-500 text-white p-2.5 rounded-lg max-w-xs border">
-                        Thanks! Fingers crossed. Enjoy your day!
-                    </div>
-                </div>
-
-                <!-- Example Received Message -->
-                <div class="flex items-end">
-                    <img class="rounded-full items-start flex-shrink-0 mr-2 object-fit-contain" src="/assets/personiconblack.png" width="32" height="32" alt="Nhu Cassel"/>
-                    <div class="bg-white text-black p-2.5 rounded-lg max-w-xs border">
-                        You too, take care!
-                    </div>
-                </div>
-                <!-- Example Message -->
-                <div class="flex justify-end">
-                    <div class="bg-blue-500 text-white p-2.5 rounded-lg max-w-xs border">
-                        Sure
-                    </div>
-                </div>
-                <div class="flex justify-end">
-                    <div class="bg-blue-500 text-white p-2.5 rounded-lg max-w-xs border">
-                        Thanks
-                    </div>
-                </div>
-
-                <div class="flex justify-end">
-                    <div class="bg-blue-500 text-white p-2.5 rounded-lg max-w-xs border">
-                        😁
-                    </div>
-                </div>
-                <!-- Example Message -->
-                <div class="flex items-end">
-                    <img class="rounded-full items-start flex-shrink-0 mr-2 object-fit-contain" src="/assets/personiconblack.png" width="32" height="32" alt="Nhu Cassel"/>
-                    <div class="bg-white text-black p-2.5 rounded-lg max-w-xs border">
-                        Okay
-                    </div>
-                </div>
-
-                <!-- Example Received Message -->
-                <div class="flex items-end">
-                    <img class="rounded-full items-start flex-shrink-0 mr-2 object-fit-contain" src="/assets/personiconblack.png" width="32" height="32" alt="Nhu Cassel"/>
-                    <div class="bg-white text-black p-2.5 rounded-lg max-w-xs border">
-                        😄
-                    </div>
-                </div>
-            </div>
-        </div> 
-        
-        <div class="bg-white p-3 flex items-center border-top">
-            <input type="text" placeholder="Type your message..." class="flex-1 border rounded px-4 py-2 focus:outline-none">
-            <button class="bg-blue-500 text-white rounded-full p-2 ml-2 hover:bg-blue-600 focus:outline-none">
-                <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M11.5003 12H5.41872M5.24634 12.7972L4.24158 15.7986C3.69128 17.4424 3.41613 18.2643 3.61359 18.7704C3.78506 19.21 4.15335 19.5432 4.6078 19.6701C5.13111 19.8161 5.92151 19.4604 7.50231 18.7491L17.6367 14.1886C19.1797 13.4942 19.9512 13.1471 20.1896 12.6648C20.3968 12.2458 20.3968 11.7541 20.1896 11.3351C19.9512 10.8529 19.1797 10.5057 17.6367 9.81135L7.48483 5.24303C5.90879 4.53382 5.12078 4.17921 4.59799 4.32468C4.14397 4.45101 3.77572 4.78336 3.60365 5.22209C3.40551 5.72728 3.67772 6.54741 4.22215 8.18767L5.24829 11.2793C5.34179 11.561 5.38855 11.7019 5.407 11.8459C5.42338 11.9738 5.42321 12.1032 5.40651 12.231C5.38768 12.375 5.34057 12.5157 5.24634 12.7972Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
-            </button>
-        </div> 
-    </div> 
+    } 
 </div> 
 
 @code {
     private string? _currentUrl;
-    private User _currentUser = new();
-    private User _targetUser = new();
-    private List<User> _users = []; 
+    private string? _content;
+    private User? _currentUser;
+    private User? _targetUser;
+    private List<User> _users = [];
+    private List<Message> _messages = [];
     
     protected override async Task OnInitializedAsync()
     {
@@ -229,8 +153,8 @@
         
         NavigationManager.LocationChanged += OnLocationChanged;
         
+        _users = await UserManager.Users.ToListAsync(); 
         _currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-        _users = UserManager.Users.ToList();
         _currentUser = _users.Find(u => u.Email == user.Identity.Name);
         
         StateHasChanged();
@@ -238,9 +162,9 @@
     
     protected override async Task OnAfterRenderAsync(bool isFirstRender) 
     {
-        if (isFirstRender)
+        if (isFirstRender && _currentUser != null)
         {
-            await JsRuntime.InvokeVoidAsync("initializeFlowbite");
+            await JsRuntime.InvokeVoidAsync("initializeFlowbite", DotNetObjectReference.Create(this));
             await JsRuntime.InvokeVoidAsync("initHubConnection", _currentUser.Id);
         }
     } 
@@ -249,11 +173,56 @@
     {
         _currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
         StateHasChanged();
-    } 
+    }
+
+    private void OnMessageInput(ChangeEventArgs args)
+    {
+        _content = args.Value?.ToString() ?? string.Empty;
+    }
+    
+    private async Task OnSendButtonClick()
+    {
+        if (_currentUser != null && _targetUser != null)
+        { 
+            await JsRuntime.InvokeVoidAsync("sendMessage", _currentUser.Id, _targetUser.Id, _content);
+            
+            var message = new Message
+            {
+                SenderId = _currentUser.Id,
+                ReceiverId = _targetUser.Id,
+                Content = _content ?? string.Empty,
+                Timestamp = DateTime.Now
+            };
+            
+            await DataDbContext.Messages.AddAsync(message);
+            await DataDbContext.SaveChangesAsync();
+            await UpdateMessages();
+            
+            _content = string.Empty; 
+        }
+    }
 
     private async Task OnUserClick(string id)
     {
         _targetUser = _users.Find(u => u.Id == id);
+        if (_currentUser != null && _targetUser != null)
+        {
+            await UpdateMessages();
+        }
         await JsRuntime.InvokeVoidAsync("onSidebarUserClick");
+    }
+    
+    [JSInvokable]
+    public async Task UpdateMessages()
+    {
+        if (_currentUser != null && _targetUser != null)
+        {
+            _messages = await DataDbContext.Messages
+                .Where(m => (m.SenderId == _currentUser.Id && m.ReceiverId == _targetUser.Id) 
+                            || (m.SenderId == _targetUser.Id && m.ReceiverId == _currentUser.Id))
+                .ToListAsync();
+            
+            StateHasChanged();
+        }
     } 
 }

@@ -3,8 +3,12 @@ import Bowser from "bowser"
 import { initFlowbite } from "flowbite"
 import * as signalR from '@microsoft/signalr'
 
-window.initializeFlowbite = () => {
-    initFlowbite();
+let dotNet = null
+let connection = new signalR.HubConnectionBuilder().withUrl("/_chatapp").build()
+
+window.initializeFlowbite = (dotnet) => {
+    dotNet = dotnet
+    initFlowbite()
 }
 
 window.getUserAgentPlatformType = () => {
@@ -37,11 +41,21 @@ window.disconnectedUsers = (id) => {
     }
 }
 
+window.receivedMessage = (senderId, receiverId, content) => { 
+    dotNet.invokeMethodAsync("UpdateMessages") 
+}
+
+window.sendMessage = async (senderId, receiverId, content) => {
+    await connection.send("SendMessage", senderId, receiverId, content)
+    console.log(dotNet)
+}
+
 window.initHubConnection = async (userId)  => {
-    let connection = new signalR.HubConnectionBuilder().withUrl(`/_chatapp?userId=${userId}`).build() 
+    connection = new signalR.HubConnectionBuilder().withUrl(`/_chatapp?userId=${userId}`).build() 
     
     connection.on("ConnectedUsers", connectedUsers)
     connection.on("DisconnectedUser", disconnectedUsers)
+    connection.on("ReceivedMessage", receivedMessage)
     
     await connection.start() 
     

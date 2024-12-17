@@ -5,26 +5,28 @@ namespace chatapp_blazor.Hubs;
 
 public class ChatHub : Hub
 {
-    private readonly DataDbContext _dbContext;
     private readonly Utils _utils;
-    public ChatHub(DataDbContext dbContext, Utils utils)
+    public ChatHub(Utils utils)
     {
-        _dbContext = dbContext;
         _utils = utils;
     }
     
-    public async Task Send(string sender, string receiver, string message)
+    public async Task SendMessage(string senderId, string receiverId, string content)
     {
-         
-        await Task.Delay(1);
+        if (_utils.ConnectionIds.TryGetValue(receiverId, out var cid))
+        {
+            await Clients.Client(cid).SendAsync("ReceivedMessage", senderId, receiverId, content);
+        }
     }
     
     public override async Task OnConnectedAsync()
     {
+        var cid = Context.ConnectionId;
         string? id = Context.GetHttpContext()?.Request.Query["userId"];
         if (id != null)
         {
             _utils.Ids.Add(id);
+            _utils.ConnectionIds[id] = cid;
             await Clients.All.SendAsync("ConnectedUsers", _utils.Ids);
         }
     }
@@ -35,6 +37,7 @@ public class ChatHub : Hub
         if (id != null)
         {
             _utils.Ids.Remove(id);
+            _utils.ConnectionIds.Remove(id);
             await Clients.All.SendAsync("DisconnectedUser", id);
         }
     }

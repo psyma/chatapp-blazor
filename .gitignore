@@ -485,7 +485,8 @@ $RECYCLE.BIN/
 
 qodana.yaml
 appsettings.json
-Data/app.db
-Data/app.db-shm
-Data/app.db-wal
-Data/Migrations/
+app.db
+app.db-shm
+app.db-wal
+Migrations/
+

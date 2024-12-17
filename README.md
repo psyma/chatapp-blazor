@@ -32,7 +32,7 @@ Provide the following values into appsettings.json
 
 {
   "ConnectionStrings": {
-    "DefaultConnection": "DataSource=Data\\app.db;Cache=Shared"
+    "DefaultConnection": "DataSource=app.db;Cache=Shared"
   },
   "Logging": {
     "LogLevel": {
