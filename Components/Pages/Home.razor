@@ -1,46 +1,41 @@
 ﻿@page "/"
+
+@using chatapp_blazor.Data
+@using Microsoft.AspNetCore.Identity 
+
+@rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<ApplicationUser> UserManager
+@inject IJSRuntime JsRuntime
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Home</PageTitle> 
 
-<button id="default-sidebar-button" data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
-    <span class="sr-only">Open sidebar</span>
-    <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-        <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
-    </svg>
-</button>
-
-<aside id="default-sidebar" class="fixed top-0 left-0 z-40 sm:w-full md:w-96 lg:w-96 h-screen -translate-x-full sm:translate-x-0" aria-label="Sidebar">
+<aside id="default-sidebar" class="fixed top-0 left-0 z-40 w-full md:w-96 lg:w-96 h-screen -translate-x-full sm:translate-x-0" aria-label="Sidebar">
     <section class="flex flex-col antialiased bg-gray-50 text-gray-600 h-full">
         <div class="relative pt-6 pb-4 px-4 border-b border-gray-200 bg-white shadow">
-            <div class="flex justify-between items-center mb-3">
-                <!-- Image + name -->
+            <div class="flex justify-between items-center mb-3"> 
                 <div class="flex items-center">
-                    <a class="inline-flex items-start mr-3" href="#0">
-                        <img class="rounded-full" src="https://res.cloudinary.com/dc6deairt/image/upload/v1638102932/user-48-01_nugblk.jpg" width="48" height="48" alt="Lauren Marsano" />
+                    <a class="inline-flex items-start mr-3" href="#">
+                        <img class="rounded-full" src="/assets/personiconyellow.png" width="48" height="48" alt="Lauren Marsano" />
                     </a>
                     <div class="pr-1">
-                        <a class="inline-flex text-gray-800 hover:text-gray-900" href="#0">
-                            <h2 class="text-xl leading-snug font-bold">Lauren Marsano</h2>
+                        <a class="inline-flex text-gray-800 hover:text-gray-900" href="#">
+                            <h2 class="text-xl leading-snug font-bold">@_currentUser.UserName</h2>
                         </a>
-                        <a class="block text-sm font-medium hover:text-indigo-500" href="#0">lauren.mars</a>
+                        <a class="block text-sm font-medium hover:text-indigo-500" href="#">@_currentUser.Email</a>
                     </div>
+                </div> 
+                <div class="nav-item px-3">
+                    <form action="Account/Logout" method="post">
+                        <AntiforgeryToken/>
+                        <input type="hidden" name="ReturnUrl" value="@_currentUrl"/>
+                        <button type="submit" class="text-gray-400 hover:text-gray-500 rounded-full focus:ring-0 outline-none focus:outline-none">
+                            <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
+                        </button>
+                    </form>
                 </div>
-                <!-- Settings button -->
-                <Authorized>
-                    <div class="nav-item px-3">
-                        <form action="Account/Logout" method="post">
-                            <AntiforgeryToken/>
-                            <input type="hidden" name="ReturnUrl" value="@currentUrl"/>
-                            <button type="submit" class="text-gray-400 hover:text-gray-500 rounded-full focus:ring-0 outline-none focus:outline-none">
-                                <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
-                            </button>
-                        </form>
-                    </div>
-                </Authorized>
-            </div>
-            <!-- Meta -->
+            </div> 
             <div class="flex flex-wrap justify-start sm:justify-start space-x-4">
                 <div class="flex items-center">
                     <svg class="w-4 h-4 fill-current flex-shrink-0 text-gray-400" viewBox="0 0 16 16">
@@ -52,65 +47,26 @@
                     <svg class="w-4 h-4 fill-current flex-shrink-0 text-gray-400" viewBox="0 0 16 16">
                         <path d="M11 0c1.3 0 2.6.5 3.5 1.5 1 .9 1.5 2.2 1.5 3.5 0 1.3-.5 2.6-1.4 3.5l-1.2 1.2c-.2.2-.5.3-.7.3-.2 0-.5-.1-.7-.3-.4-.4-.4-1 0-1.4l1.1-1.2c.6-.5.9-1.3.9-2.1s-.3-1.6-.9-2.2C12 1.7 10 1.7 8.9 2.8L7.7 4c-.4.4-1 .4-1.4 0-.4-.4-.4-1 0-1.4l1.2-1.1C8.4.5 9.7 0 11 0ZM8.3 12c.4-.4 1-.5 1.4-.1.4.4.4 1 0 1.4l-1.2 1.2C7.6 15.5 6.3 16 5 16c-1.3 0-2.6-.5-3.5-1.5C.5 13.6 0 12.3 0 11c0-1.3.5-2.6 1.5-3.5l1.1-1.2c.4-.4 1-.4 1.4 0 .4.4.4 1 0 1.4L2.9 8.9c-.6.5-.9 1.3-.9 2.1s.3 1.6.9 2.2c1.1 1.1 3.1 1.1 4.2 0L8.3 12Zm1.1-6.8c.4-.4 1-.4 1.4 0 .4.4.4 1 0 1.4l-4.2 4.2c-.2.2-.5.3-.7.3-.2 0-.5-.1-.7-.3-.4-.4-.4-1 0-1.4l4.2-4.2Z" />
                     </svg>
-                    <a class="text-sm font-medium whitespace-nowrap text-indigo-500 hover:text-indigo-600 ml-2" href="#0">carolinmcneail.com</a>
+                    <a class="text-sm font-medium whitespace-nowrap text-indigo-500 hover:text-indigo-600 ml-2" href="#">carolinmcneail.com</a>
                 </div>
             </div>
         </div>
         <div class="relative w-full mx-auto overflow-auto h-[100dvh] bg-white shadow ">
             <div class="py-3 px-4">
                 <h3 class="text-xs font-semibold uppercase text-gray-400 mb-1">Chats</h3>
-                <!-- Chat list -->
                 <div class="divide-y pb-6 h-full divide-gray-200">
-                    <!-- User -->
-                    <button id="user" class="w-full text-left py-2 focus:outline-none focus-visible:bg-indigo-50 hover:bg-gray-200 p-1">
-                        <div class="flex items-center">
-                            <img class="rounded-full items-start flex-shrink-0 mr-3" src="https://res.cloudinary.com/dc6deairt/image/upload/v1638102932/user-32-01_pfck4u.jpg" width="32" height="32" alt="Marie Zulfikar" />
-                            <div>
-                                <h4 class="text-sm font-semibold text-gray-900">Marie Zulfikar</h4>
-                                <div class="text-[13px]">The video chat ended · 2hrs</div>
+                    @foreach (var user in _users.Where(user => user.Id != _currentUser.Id))
+                    {
+                        <button @onclick="(() => OnUserClick(user.Id))" class="w-full text-left py-2 focus:outline-none focus-visible:bg-indigo-50 hover:bg-gray-200 p-1">
+                            <div class="flex items-center">
+                                <img class="rounded-full items-start flex-shrink-0 mr-3" src="/assets/personiconblack.png" width="32" height="32" alt="Nhu Cassel"/>
+                                <div>
+                                    <h4 class="text-sm font-semibold text-gray-900">@user.UserName</h4>
+                                    <div class="text-[13px]">Hello Lauren 👋, · 24 Mar</div>
+                                </div>
                             </div>
-                        </div>
-                    </button>
-                    <!-- User -->
-                    <button class="w-full text-left py-2 focus:outline-none focus-visible:bg-indigo-50 hover:bg-gray-200 p-1">
-                        <div class="flex items-center">
-                            <img class="rounded-full items-start flex-shrink-0 mr-3" src="https://res.cloudinary.com/dc6deairt/image/upload/v1638102932/user-32-02_vll8uv.jpg" width="32" height="32" alt="Nhu Cassel" />
-                            <div>
-                                <h4 class="text-sm font-semibold text-gray-900">Nhu Cassel</h4>
-                                <div class="text-[13px]">Hello Lauren 👋, · 24 Mar</div>
-                            </div>
-                        </div>
-                    </button>
-                    <!-- User -->
-                    <button class="w-full text-left py-2 focus:outline-none focus-visible:bg-indigo-50 hover:bg-gray-200 p-1">
-                        <div class="flex items-center">
-                            <img class="rounded-full items-start flex-shrink-0 mr-3" src="https://res.cloudinary.com/dc6deairt/image/upload/v1638102932/user-32-03_uzwykl.jpg" width="32" height="32" alt="Patrick Friedman" />
-                            <div>
-                                <h4 class="text-sm font-semibold text-gray-900">Patrick Friedman</h4>
-                                <div class="text-[13px]">Yes, you’re right but… · 14 Mar</div>
-                            </div>
-                        </div>
-                    </button>
-                    <!-- User -->
-                    <button class="w-full text-left py-2 focus:outline-none focus-visible:bg-indigo-50 hover:bg-gray-200 p-1">
-                        <div class="flex items-center">
-                            <img class="rounded-full items-start flex-shrink-0 mr-3" src="https://res.cloudinary.com/dc6deairt/image/upload/v1638102932/user-32-04_ttlftd.jpg" width="32" height="32" alt="Byrne McKenzie" />
-                            <div>
-                                <h4 class="text-sm font-semibold text-gray-900">Byrne McKenzie</h4>
-                                <div class="text-[13px]">Hey Lauren ✨, first of all… · 14 Mar</div>
-                            </div>
-                        </div>
-                    </button>
-                    <!-- User -->
-                    <button class="w-full text-left py-2 focus:outline-none focus-visible:bg-indigo-50 hover:bg-gray-200 p-1">
-                        <div class="flex items-center">
-                            <img class="rounded-full items-start flex-shrink-0 mr-3" src="https://res.cloudinary.com/dc6deairt/image/upload/v1638102932/user-32-05_bktgmb.jpg" width="32" height="32" alt="Scott Micheal" />
-                            <div>
-                                <h4 class="text-sm font-semibold text-gray-900">Scott Micheal</h4>
-                                <div class="text-[13px]">No way 🤙! · 11 Mar</div>
-                            </div>
-                        </div>
-                    </button>
+                        </button>
+                    }
                 </div>
             </div>
         </div> 
@@ -118,40 +74,181 @@
 </aside>
 
 <div class="sm:ml-96">
-    <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
+    <div class="bg-white h-[100dvh] flex flex-col max-w-full mx-auto">
+        <div class="bg-black p-3 text-white flex justify-between items-center"> 
+            <div class="flex items-center gap-3">
+                <button id="default-sidebar-btn" data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" class="inline-flex items-center p-2 mt-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+                    <span class="sr-only">Open sidebar</span>
+                    <svg class="w-6 h-6 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12l4-4m-4 4 4 4"/>
+                    </svg>
+                </button>
+                <div class="flex items-center">
+                    <img class="rounded-full items-start flex-shrink-0 mr-2" src="/assets/personiconblack.png" width="32" height="32" alt="Nhu Cassel"/>
+                    <span>Chat App</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-4">
+            <div class="flex flex-col space-y-2">
+                <!-- Messages go here -->
+                <!-- Example Message -->
+                <div class="flex justify-end">
+                    <div class="bg-blue-500 text-white p-2.5 rounded-lg max-w-xs border">
+                        Hey, how's your day going?
+                    </div>
+                </div>
+
+                <!-- Example Received Message -->
+                <div class="flex items-end">
+                    <img class="rounded-full items-start flex-shrink-0 mr-2 object-fit-contain" src="/assets/personiconblack.png" width="32" height="32" alt="Nhu Cassel"/>
+                    <div class="bg-white text-black p-2.5 rounded-lg max-w-xs border">
+                        Not too bad, just a bit busy. How about you?
+                    </div>
+                </div>
+                <!-- Example Message -->
+                <div class="flex justify-end">
+                    <div class="bg-blue-500 text-white p-2.5 rounded-lg max-w-xs border">
+                        I'm good, thanks. Anything exciting happening?
+                    </div>
+                </div>
+
+                <!-- Example Received Message -->
+                <div class="flex items-end">
+                    <img class="rounded-full items-start flex-shrink-0 mr-2 object-fit-contain" src="/assets/personiconblack.png" width="32" height="32" alt="Nhu Cassel"/>
+                    <div class="bg-white text-black p-2.5 rounded-lg max-w-xs border">
+                        Not really, just the usual. Work and errands.
+                    </div>
+                </div>
+                <!-- Example Message -->
+                <div class="flex justify-end">
+                    <div class="bg-blue-500 text-white p-2.5 rounded-lg max-w-xs border">
+                        Sounds like a typical day. Got any plans for the weekend?
+                    </div>
+                </div>
+
+                <!-- Example Received Message -->
+                <div class="flex items-end">
+                    <img class="rounded-full items-start flex-shrink-0 mr-2 object-fit-contain" src="/assets/personiconblack.png" width="32" height="32" alt="Nhu Cassel"/>
+                    <div class="bg-white text-black p-2.5 rounded-lg max-w-xs border">
+                        Not yet, I'm hoping to relax and maybe catch up on some reading. How about you?
+                    </div>
+                </div>
+                <!-- Example Message -->
+                <div class="flex justify-end">
+                    <div class="bg-blue-500 text-white p-2.5 rounded-lg max-w-xs border">
+                        I might go hiking if the weather's nice. Otherwise, just taking it easy
+                    </div>
+                </div>
+
+                <!-- Example Received Message -->
+                <div class="flex items-end">
+                    <img class="rounded-full items-start flex-shrink-0 mr-2 object-fit-contain" src="/assets/personiconblack.png" width="32" height="32" alt="Nhu Cassel"/>
+                    <div class="bg-white text-black p-2.5 rounded-lg max-w-xs border">
+                        Hiking sounds fun. Hope the weather cooperates for you!
+                    </div>
+                </div>
+                <!-- Example Message -->
+                <div class="flex justify-end">
+                    <div class="bg-blue-500 text-white p-2.5 rounded-lg max-w-xs border">
+                        Thanks! Fingers crossed. Enjoy your day!
+                    </div>
+                </div>
+
+                <!-- Example Received Message -->
+                <div class="flex items-end">
+                    <img class="rounded-full items-start flex-shrink-0 mr-2 object-fit-contain" src="/assets/personiconblack.png" width="32" height="32" alt="Nhu Cassel"/>
+                    <div class="bg-white text-black p-2.5 rounded-lg max-w-xs border">
+                        You too, take care!
+                    </div>
+                </div>
+                <!-- Example Message -->
+                <div class="flex justify-end">
+                    <div class="bg-blue-500 text-white p-2.5 rounded-lg max-w-xs border">
+                        Sure
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <div class="bg-blue-500 text-white p-2.5 rounded-lg max-w-xs border">
+                        Thanks
+                    </div>
+                </div>
+
+                <div class="flex justify-end">
+                    <div class="bg-blue-500 text-white p-2.5 rounded-lg max-w-xs border">
+                        😁
+                    </div>
+                </div>
+                <!-- Example Message -->
+                <div class="flex items-end">
+                    <img class="rounded-full items-start flex-shrink-0 mr-2 object-fit-contain" src="/assets/personiconblack.png" width="32" height="32" alt="Nhu Cassel"/>
+                    <div class="bg-white text-black p-2.5 rounded-lg max-w-xs border">
+                        Okay
+                    </div>
+                </div>
+
+                <!-- Example Received Message -->
+                <div class="flex items-end">
+                    <img class="rounded-full items-start flex-shrink-0 mr-2 object-fit-contain" src="/assets/personiconblack.png" width="32" height="32" alt="Nhu Cassel"/>
+                    <div class="bg-white text-black p-2.5 rounded-lg max-w-xs border">
+                        😄
+                    </div>
+                </div>
+            </div>
+        </div> 
         
-    </div>
+        <div class="bg-white p-3 flex items-center border-top">
+            <input type="text" placeholder="Type your message..." class="flex-1 border rounded px-4 py-2 focus:outline-none">
+            <button class="bg-blue-500 text-white rounded-full p-2 ml-2 hover:bg-blue-600 focus:outline-none">
+                <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M11.5003 12H5.41872M5.24634 12.7972L4.24158 15.7986C3.69128 17.4424 3.41613 18.2643 3.61359 18.7704C3.78506 19.21 4.15335 19.5432 4.6078 19.6701C5.13111 19.8161 5.92151 19.4604 7.50231 18.7491L17.6367 14.1886C19.1797 13.4942 19.9512 13.1471 20.1896 12.6648C20.3968 12.2458 20.3968 11.7541 20.1896 11.3351C19.9512 10.8529 19.1797 10.5057 17.6367 9.81135L7.48483 5.24303C5.90879 4.53382 5.12078 4.17921 4.59799 4.32468C4.14397 4.45101 3.77572 4.78336 3.60365 5.22209C3.40551 5.72728 3.67772 6.54741 4.22215 8.18767L5.24829 11.2793C5.34179 11.561 5.38855 11.7019 5.407 11.8459C5.42338 11.9738 5.42321 12.1032 5.40651 12.231C5.38768 12.375 5.34057 12.5157 5.24634 12.7972Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+            </button>
+        </div> 
+    </div> 
 </div> 
 
 @code {
-    private string? currentUrl;
+    private string? _currentUrl;
+    private ApplicationUser _currentUser = new();
+    private ApplicationUser _targetUser = new();
+    private List<ApplicationUser> _users = []; 
     
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync(); 
         var user = authState.User;
-
-        // Redirect if the user is not authenticated
+ 
         if (user == null || !user.Identity.IsAuthenticated)
         {
             NavigationManager.NavigateTo("/Account/Login", true);
         }
-    } 
-
-    protected override void OnInitialized()
-    {
-        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        
         NavigationManager.LocationChanged += OnLocationChanged;
-    }
+        
+        _currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        _users = UserManager.Users.ToList();
+        _currentUser = _users.Find(u => u.Email == user.Identity.Name);
+        
+        StateHasChanged();
+    }   
+    
+    protected override async Task OnAfterRenderAsync(bool isFirstRender) 
+    {
+        if (isFirstRender)
+        {
+            await JsRuntime.InvokeVoidAsync("initializeFlowbite");
+        }
+    } 
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
-        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        _currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
         StateHasChanged();
-    }
+    } 
 
-    public void Dispose()
+    private async Task OnUserClick(string id)
     {
-        NavigationManager.LocationChanged -= OnLocationChanged;
-    }
+        _targetUser = _users.Find(u => u.Id == id);
+        await JsRuntime.InvokeVoidAsync("onSidebarUserClick");
+    } 
 }

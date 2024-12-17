@@ -483,6 +483,9 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 
+qodana.yaml
 appsettings.json
 Data/app.db
+Data/app.db-shm
+Data/app.db-wal
 Data/Migrations/
