@@ -11,18 +11,28 @@ window.initializeFlowbite = (dotnet) => {
     initFlowbite()
 }
 
-window.autoScrollDownChatbox = () => {
+window.autoScrollDownChatbox = (force=false) => {
     const chatbox = document.getElementById('chatbox')
     function isScrollbarAtBottom(element){
         const offset = Math.abs(element.scrollHeight - element.clientHeight) * .40
         return Math.abs(element.scrollHeight - element.clientHeight - element.scrollTop) <= offset
     }
-
-    if (isScrollbarAtBottom(chatbox)) {
-        setTimeout(() => {
-            chatbox.style.scrollBehavior = "smooth"
-            chatbox.scrollTop = chatbox.scrollHeight
-        }, 500)
+    
+    if (chatbox) {
+        if (force) {
+            setTimeout(() => {
+                chatbox.style.scrollBehavior = "smooth"
+                chatbox.scrollTop = chatbox.scrollHeight
+            }, 500)
+        }
+        else {
+            if (isScrollbarAtBottom(chatbox)) {
+                setTimeout(() => {
+                    chatbox.style.scrollBehavior = "smooth"
+                    chatbox.scrollTop = chatbox.scrollHeight
+                }, 500)
+            }
+        }
     }
 }
 
@@ -36,14 +46,8 @@ window.onSidebarUserClick = async () => {
     if (getUserAgentPlatformType() === "mobile") {
         sidebarBtn.click()
     }
-    
-    const chatbox = document.getElementById('chatbox') 
-    if (chatbox) {
-        setTimeout(() => {
-            chatbox.style.scrollBehavior = "smooth"
-            chatbox.scrollTop = chatbox.scrollHeight
-        }, 500)
-    } 
+
+    autoScrollDownChatbox(true)
 }
 
 window.connectedUsers = (ids) => {
