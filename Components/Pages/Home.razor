@@ -43,7 +43,7 @@
             <div class="py-3 px-4">
                 <h3 class="text-xs font-semibold uppercase text-gray-400 mb-1">Chats</h3>
                 <div class="divide-y pb-6 h-full divide-gray-200">
-                    @foreach (var user in _users.Where(user => user.Id != _currentUser?.Id))
+                    @foreach (var user in _users.Where(u => u.Id != _currentUser?.Id))
                     {
                         <button @onclick="(() => OnUserClick(user.Id))" class="w-full text-left py-2 focus:outline-none focus-visible:bg-indigo-50 hover:bg-gray-200 p-1">
                             <div class="flex items-center">
@@ -54,7 +54,12 @@
                                 </div>
                                 <div>
                                     <h4 class="text-sm font-semibold text-gray-900">@user.Name</h4>
-                                    <div class="text-[13px]">Hello Lauren 👋, · 24 Mar</div>
+                                        @if (_lastMessageMap.TryGetValue(user.Id, out var message))
+                                        {
+                                            <div class="text-[13px]">
+                                                    @message.Content · @message.Timestamp.ToShortTimeString()
+                                            </div>
+                                        }
                                 </div>
                             </div>
                         </button>
@@ -128,7 +133,7 @@
     private User? _targetUser;
     private List<User> _users = [];
     private List<Message> _messages = [];
-    private Dictionary<string, Message> _lastMessageMap = new();
+    private readonly Dictionary<string, Message> _lastMessageMap = new();
     
     protected override async Task OnInitializedAsync()
     {
@@ -145,7 +150,8 @@
         
         NavigationManager.LocationChanged += OnLocationChanged;
         _currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-        StateHasChanged();
+
+        await UpdateLastestMessages();
     }   
     
     protected override async Task OnAfterRenderAsync(bool isFirstRender) 
@@ -185,6 +191,7 @@
             await DataDbContext.Messages.AddAsync(message);
             await DataDbContext.SaveChangesAsync();
             await UpdateMessages();
+            await UpdateLastestMessages();
             
             _content = string.Empty; 
         }
@@ -200,9 +207,37 @@
         await JsRuntime.InvokeVoidAsync("onSidebarUserClick");
     }
 
-    public async Task UpdateLastMessages()
+    private void SortUserBaseOnLastestMessage()
     {
-        
+        _users = _users
+            .OrderByDescending(user => 
+                    _lastMessageMap.TryGetValue(user.Id, out var value) 
+                        ? value.Timestamp 
+                        : DateTime.MinValue
+            )
+            .ToList();
+    }
+    
+    [JSInvokable]
+    public async Task UpdateLastestMessages()
+    {
+        foreach (var user in _users)
+        {
+            if (_currentUser == null) continue;
+            var message = await DataDbContext.Messages
+                .Where(m => (m.SenderId == _currentUser.Id && m.ReceiverId == user.Id) || 
+                            (m.SenderId == user.Id && m.ReceiverId == _currentUser.Id))
+                .OrderByDescending(m => m.Timestamp)
+                .FirstOrDefaultAsync();
+
+            if (message != null)
+            {
+                _lastMessageMap[user.Id] = message;
+            }
+        }
+
+        SortUserBaseOnLastestMessage();
+        StateHasChanged();
     }
     
     [JSInvokable]

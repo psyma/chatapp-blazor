@@ -42,7 +42,8 @@ window.disconnectedUsers = (id) => {
 }
 
 window.receivedMessage = (senderId, receiverId, content) => { 
-    dotNet.invokeMethodAsync("UpdateMessages") 
+    dotNet.invokeMethodAsync("UpdateMessages")
+    dotNet.invokeMethodAsync("UpdateLastMessages")
 }
 
 window.sendMessage = async (senderId, receiverId, content) => {
