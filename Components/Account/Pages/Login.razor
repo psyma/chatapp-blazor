@@ -24,10 +24,9 @@
                 <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                     Sign in to your account
                 </h1>
-                <StatusMessage Message="@errorMessage"/>
+                <StatusMessage Message="@_errorMessage"/>
                 <EditForm class="space-y-4 md:space-y-6" Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
-                    <DataAnnotationsValidator/>
-                    <ValidationSummary class="text-danger" role="alert"/>
+                    <DataAnnotationsValidator/> 
                     <div>
                         <label for="Input.Email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
                         <InputText @bind-Value="Input.Email" id="Input.Email" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" autocomplete="username" aria-required="true" placeholder=""/>
@@ -58,9 +57,9 @@
 </section>
 
 @code {
-    private string? errorMessage;
+    private string? _errorMessage;
 
-    [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
+    [CascadingParameter] private HttpContext HttpContext { get; set; } = null!;
 
     [SupplyParameterFromForm] private InputModel Input { get; set; } = new();
 
@@ -109,7 +108,7 @@
         }
         else
         {
-            errorMessage = "Error: Invalid login attempt.";
+            _errorMessage = "Error: Invalid login attempt.";
         }
     }
 

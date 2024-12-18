@@ -1180,6 +1180,10 @@ input:checked + .toggle-bg {
   margin-top: 0.5rem;
 }
 
+.ml-3 {
+  margin-left: 0.75rem;
+}
+
 .block {
   display: block;
 }
