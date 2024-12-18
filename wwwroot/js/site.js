@@ -11,16 +11,39 @@ window.initializeFlowbite = (dotnet) => {
     initFlowbite()
 }
 
+window.autoScrollDownChatbox = () => {
+    const chatbox = document.getElementById('chatbox')
+    function isScrollbarAtBottom(element){
+        const offset = Math.abs(element.scrollHeight - element.clientHeight) * .40
+        return Math.abs(element.scrollHeight - element.clientHeight - element.scrollTop) <= offset
+    }
+
+    if (isScrollbarAtBottom(chatbox)) {
+        setTimeout(() => {
+            chatbox.style.scrollBehavior = "smooth"
+            chatbox.scrollTop = chatbox.scrollHeight
+        }, 500)
+    }
+}
+
 window.getUserAgentPlatformType = () => {
     const browser = Bowser.getParser(window.navigator.userAgent);
     return browser.getPlatform().type
 }
 
 window.onSidebarUserClick = async () => {
-    const sidebarBtn = document.getElementById("default-sidebar-btn") 
+    const sidebarBtn = document.getElementById("default-sidebar-btn")
     if (getUserAgentPlatformType() === "mobile") {
         sidebarBtn.click()
     }
+    
+    const chatbox = document.getElementById('chatbox') 
+    if (chatbox) {
+        setTimeout(() => {
+            chatbox.style.scrollBehavior = "smooth"
+            chatbox.scrollTop = chatbox.scrollHeight
+        }, 500)
+    } 
 }
 
 window.connectedUsers = (ids) => {
@@ -43,7 +66,8 @@ window.disconnectedUsers = (id) => {
 
 window.receivedMessage = (senderId, receiverId, content) => { 
     dotNet.invokeMethodAsync("UpdateMessages")
-    dotNet.invokeMethodAsync("UpdateLastMessages")
+    dotNet.invokeMethodAsync("UpdateLastestMessages")
+    autoScrollDownChatbox()
 }
 
 window.sendMessage = async (senderId, receiverId, content) => {
