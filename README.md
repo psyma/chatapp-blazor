@@ -1,13 +1,4 @@
-# Simple real time chat app using Blazor & .NET 9
-
-# Features
-```
-Audio Calls ❌
-Video Calls ❌
-End-to-End Encryption ❌
-Two-Factor Authentication (2FA) ❌
-Message Saving (Optional) ❌
-```
+# Simple real time chat app using Blazor & .NET 9 
 
 # Install node modules
 ```
