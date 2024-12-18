@@ -48,17 +48,7 @@ window.onSidebarUserClick = async () => {
     }
 
     autoScrollDownChatbox(true)
-}
-
-window.connectedUsers = (ids) => {
-    for (const id of ids) {
-        const element = document.getElementById(id + "-online-status")
-        if (element) {
-            element.classList.remove("bg-red-400")
-            element.classList.add("bg-green-400")
-        }
-    }
-}
+}  
 
 window.disconnectedUsers = (id) => {
     const element = document.getElementById(id + "-online-status")
@@ -68,9 +58,9 @@ window.disconnectedUsers = (id) => {
     }
 }
 
-window.receivedMessage = (senderId, receiverId, content) => { 
-    dotNet.invokeMethodAsync("UpdateMessages")
-    dotNet.invokeMethodAsync("UpdateLastestMessages")
+window.receivedMessage = async (senderId, receiverId, content) => { 
+    await dotNet.invokeMethodAsync("UpdateMessages")
+    await dotNet.invokeMethodAsync("UpdateLastestMessages")
     autoScrollDownChatbox()
 }
 
@@ -80,8 +70,7 @@ window.sendMessage = async (senderId, receiverId, content) => {
 
 window.initHubConnection = async (userId)  => {
     connection = new signalR.HubConnectionBuilder().withUrl(`/_chatapp?userId=${userId}`).build() 
-    
-    connection.on("ConnectedUsers", connectedUsers)
+     
     connection.on("DisconnectedUser", disconnectedUsers)
     connection.on("ReceivedMessage", receivedMessage)
     

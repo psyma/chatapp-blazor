@@ -9,6 +9,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject DataDbContext DataDbContext
 @inject UserManager<User> UserManager
+@inject Utility Utility
 @inject IJSRuntime JsRuntime
 
 <PageTitle>Home</PageTitle>
@@ -47,10 +48,9 @@
                     {
                         <button @onclick="(() => OnUserClick(user.Id))" class="w-full text-left py-2 focus:outline-none focus-visible:bg-indigo-50 hover:bg-gray-200 p-1">
                             <div class="flex items-center">
-                                <img class="hidden rounded-full items-start flex-shrink-0 mr-3" src="/assets/personiconblack.png" width="32" height="32" alt="Nhu Cassel"/>
                                 <div class="relative">
                                     <img class="w-10 h-10 rounded-full mr-3" src="/assets/personiconblack.png" alt="personiconblack">
-                                    <span id="@user.Id-online-status" class="bottom-0 left-7 absolute  w-3.5 h-3.5 bg-red-400 border-2 border-white dark:border-gray-800 rounded-full"></span>
+                                    <span class="@(Utility.ConnectionIdMap.ContainsKey(user.Id) ? "bg-green-400" : "bg-red-400") bottom-0 left-7 absolute w-3.5 h-3.5 border-2 border-white dark:border-gray-800 rounded-full"></span>
                                 </div>
                                 <div>
                                     <h4 class="text-sm font-semibold text-gray-900">@user.Name</h4>
@@ -184,10 +184,7 @@
     private async Task OnSendButtonClick()
     {
         if (_currentUser != null && _targetUser != null)
-        { 
-            await JsRuntime.InvokeVoidAsync("sendMessage", _currentUser.Id, _targetUser.Id, _content);
-            await JsRuntime.InvokeVoidAsync("autoScrollDownChatbox");
-            
+        {  
             var message = new Message
             {
                 SenderId = _currentUser.Id,
@@ -196,12 +193,14 @@
                 Timestamp = DateTime.Now
             };
             
+            _content = string.Empty; 
             await DataDbContext.Messages.AddAsync(message);
             await DataDbContext.SaveChangesAsync();
             await UpdateMessages();
             await UpdateLastestMessages();
             
-            _content = string.Empty; 
+            await JsRuntime.InvokeVoidAsync("sendMessage", _currentUser.Id, _targetUser.Id, _content);
+            await JsRuntime.InvokeVoidAsync("autoScrollDownChatbox");
         }
     }
 
@@ -257,8 +256,8 @@
                 .Where(m => (m.SenderId == _currentUser.Id && m.ReceiverId == _targetUser.Id) 
                             || (m.SenderId == _targetUser.Id && m.ReceiverId == _currentUser.Id))
                 .ToListAsync();
-            
-            StateHasChanged();
         }
+        
+        StateHasChanged();
     } 
 }

@@ -14,7 +14,7 @@ public class ChatHub : Hub
     public async Task SendMessage(string senderId, string receiverId, string content)
     {
         if (_utility.ConnectionIdMap.TryGetValue(receiverId, out var cid))
-        {
+        { 
             await Clients.Client(cid).SendAsync("ReceivedMessage", senderId, receiverId, content);
         }
     }
@@ -26,9 +26,10 @@ public class ChatHub : Hub
         if (id != null)
         {
             _utility.Ids.Add(id);
-            _utility.ConnectionIdMap[id] = cid;
-            await Clients.All.SendAsync("ConnectedUsers", _utility.Ids);
+            _utility.ConnectionIdMap[id] = cid; 
         }
+
+        await Task.Delay(1);
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
