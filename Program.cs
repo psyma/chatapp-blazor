@@ -36,7 +36,7 @@ builder.Services.AddIdentityCore<User>(options => options.SignIn.RequireConfirme
     .AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<User>, IdentityNoOpEmailSender>();
-builder.Services.AddSingleton<Utils>();
+builder.Services.AddSingleton<Utility>();
 builder.Services.AddSignalR();
 
 var app = builder.Build();

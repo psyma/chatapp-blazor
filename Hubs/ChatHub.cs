@@ -5,15 +5,15 @@ namespace chatapp_blazor.Hubs;
 
 public class ChatHub : Hub
 {
-    private readonly Utils _utils;
-    public ChatHub(Utils utils)
+    private readonly Utility _utility;
+    public ChatHub(Utility utility)
     {
-        _utils = utils;
+        _utility = utility;
     }
     
     public async Task SendMessage(string senderId, string receiverId, string content)
     {
-        if (_utils.ConnectionIds.TryGetValue(receiverId, out var cid))
+        if (_utility.ConnectionIdMap.TryGetValue(receiverId, out var cid))
         {
             await Clients.Client(cid).SendAsync("ReceivedMessage", senderId, receiverId, content);
         }
@@ -25,9 +25,9 @@ public class ChatHub : Hub
         string? id = Context.GetHttpContext()?.Request.Query["userId"];
         if (id != null)
         {
-            _utils.Ids.Add(id);
-            _utils.ConnectionIds[id] = cid;
-            await Clients.All.SendAsync("ConnectedUsers", _utils.Ids);
+            _utility.Ids.Add(id);
+            _utility.ConnectionIdMap[id] = cid;
+            await Clients.All.SendAsync("ConnectedUsers", _utility.Ids);
         }
     }
 
@@ -36,8 +36,8 @@ public class ChatHub : Hub
         string? id = Context.GetHttpContext()?.Request.Query["userId"];
         if (id != null)
         {
-            _utils.Ids.Remove(id);
-            _utils.ConnectionIds.Remove(id);
+            _utility.Ids.Remove(id);
+            _utility.ConnectionIdMap.Remove(id);
             await Clients.All.SendAsync("DisconnectedUser", id);
         }
     }
