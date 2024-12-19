@@ -1,8 +1,11 @@
 ﻿@page "/"
 
 @using chatapp_blazor.Models
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
+
+@attribute [Authorize]
 
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
@@ -145,12 +148,7 @@
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-
-        if (user?.Identity?.IsAuthenticated != true)
-        {
-            NavigationManager.NavigateTo("/Account/Login", forceLoad: true);
-        } 
+        var user = authState.User; 
         
         _users = await UserManager.Users.ToListAsync(); 
         _currentUser = _users.Find(u => u.Email == user?.Identity?.Name);
