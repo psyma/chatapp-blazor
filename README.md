@@ -25,6 +25,12 @@ Provide the following values into appsettings.json
   "ConnectionStrings": {
     "DefaultConnection": "DataSource=app.db;Cache=Shared"
   },
+  "EmailAuth": {
+    "Host": "",
+    "Port": 587,
+    "Username": "",
+    "Password": ""
+  }, 
   "Logging": {
     "LogLevel": {
       "Default": "Information",

@@ -31,12 +31,19 @@ builder.Services.AddDbContext<DataDbContext>(options =>
     options.UseSqlite(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddIdentityCore<User>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddIdentityCore<User>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = true;
+        options.Tokens.ProviderMap.Add("CustomEmailConfirmation", new TokenProviderDescriptor(typeof(CustomEmailConfirmationTokenProvider<User>)));
+        options.Tokens.EmailConfirmationTokenProvider = "CustomEmailConfirmation";
+    })
     .AddEntityFrameworkStores<DataDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-builder.Services.AddSingleton<IEmailSender<User>, IdentityNoOpEmailSender>();
+builder.Services.AddTransient<CustomEmailConfirmationTokenProvider<User>>(); 
+builder.Services.AddSingleton(builder.Configuration.GetSection("EmailAuth").Get<EmailAuth>() ?? new EmailAuth());
+builder.Services.AddSingleton<IEmailSender<User>, EmailSender>();
 builder.Services.AddSingleton<Utility>();
 builder.Services.AddSignalR();
 builder.Services.AddResponseCompression(opts =>
