@@ -1,8 +1,10 @@
 using chatapp_blazor.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 namespace chatapp_blazor.Hubs;
 
+[Authorize]
 public class ChatHub(Utility utility) : Hub
 {
     public async Task SendMessage(string senderId, string receiverId, string content)

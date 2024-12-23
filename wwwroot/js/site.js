@@ -4,7 +4,7 @@ import { initFlowbite } from "flowbite"
 import * as signalR from '@microsoft/signalr'
 
 let dotNet = null
-let connection = new signalR.HubConnectionBuilder().withUrl("/_chatapp").build()
+let connection = null
 
 window.initializeFlowbite = (dotnet) => {
     dotNet = dotnet
@@ -74,9 +74,5 @@ window.initHubConnection = async (userId)  => {
     connection.on("DisconnectedUser", disconnectedUsers)
     connection.on("ReceivedMessage", receivedMessage)
     
-    await connection.start() 
-    
-    if (connection.connectionId) {
-        console.log("Connected") 
-    } 
-}
+    await connection.start()
+} 
