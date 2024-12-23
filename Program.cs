@@ -25,6 +25,8 @@ builder.Services.AddAuthentication(options =>
     })
     .AddIdentityCookies();
 
+var emailAuth = builder.Configuration.GetSection("EmailAuth").Get<EmailAuth>() ??
+                throw new InvalidOperationException("Email authentication 'EmailAuth' not found.");
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<DataDbContext>(options =>
@@ -42,8 +44,8 @@ builder.Services.AddIdentityCore<User>(options =>
     .AddDefaultTokenProviders();
 
 builder.Services.AddTransient<CustomEmailConfirmationTokenProvider<User>>(); 
-builder.Services.AddSingleton(builder.Configuration.GetSection("EmailAuth").Get<EmailAuth>() ?? new EmailAuth());
-builder.Services.AddSingleton<IEmailSender<User>, EmailSender>();
+builder.Services.AddTransient<IEmailSender<User>, EmailSender>();
+builder.Services.AddSingleton(emailAuth);
 builder.Services.AddSingleton<Utility>();
 builder.Services.AddSignalR();
 builder.Services.AddResponseCompression(opts =>

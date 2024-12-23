@@ -3,17 +3,11 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace chatapp_blazor.Hubs;
 
-public class ChatHub : Hub
+public class ChatHub(Utility utility) : Hub
 {
-    private readonly Utility _utility;
-    public ChatHub(Utility utility)
-    {
-        _utility = utility;
-    }
-    
     public async Task SendMessage(string senderId, string receiverId, string content)
     {
-        if (_utility.ConnectionIdMap.TryGetValue(receiverId, out var cid))
+        if (utility.ConnectionIdMap.TryGetValue(receiverId, out var cid))
         { 
             await Clients.Client(cid).SendAsync("ReceivedMessage", senderId, receiverId, content);
         }
@@ -25,8 +19,8 @@ public class ChatHub : Hub
         string? id = Context.GetHttpContext()?.Request.Query["userId"];
         if (id != null)
         {
-            _utility.Ids.Add(id);
-            _utility.ConnectionIdMap[id] = cid; 
+            utility.Ids.Add(id);
+            utility.ConnectionIdMap[id] = cid; 
         }
 
         await Task.Delay(1);
@@ -37,8 +31,8 @@ public class ChatHub : Hub
         string? id = Context.GetHttpContext()?.Request.Query["userId"];
         if (id != null)
         {
-            _utility.Ids.Remove(id);
-            _utility.ConnectionIdMap.Remove(id);
+            utility.Ids.Remove(id);
+            utility.ConnectionIdMap.Remove(id);
             await Clients.All.SendAsync("DisconnectedUser", id);
         }
     }

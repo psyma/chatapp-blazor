@@ -4,10 +4,9 @@ using Microsoft.Extensions.Options;
 
 namespace chatapp_blazor.Components.Account;
 
-public class CustomEmailConfirmationTokenProvider<TUser> : DataProtectorTokenProvider<TUser> where TUser : class
-{
-    public CustomEmailConfirmationTokenProvider(
-        IDataProtectionProvider dataProtectionProvider, 
-        IOptions<EmailConfirmationTokenProviderOptions> options,
-        ILogger<DataProtectorTokenProvider<TUser>> logger) : base(dataProtectionProvider, options, logger) { }
-}
+public class CustomEmailConfirmationTokenProvider<TUser>(
+    IDataProtectionProvider dataProtectionProvider,
+    IOptions<EmailConfirmationTokenProviderOptions> options,
+    ILogger<DataProtectorTokenProvider<TUser>> logger)
+    : DataProtectorTokenProvider<TUser>(dataProtectionProvider, options, logger)
+    where TUser : class;

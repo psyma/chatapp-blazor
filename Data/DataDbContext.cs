@@ -7,5 +7,4 @@ public class DataDbContext(DbContextOptions<DataDbContext> options)
     : IdentityDbContext<User>(options)
 {
     public DbSet<Message> Messages => Set<Message>();
-    public List<string> Ids = [];
 }
