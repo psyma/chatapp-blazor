@@ -45,4 +45,5 @@ Provide the following values into appsettings.json
 ```
 1. npm run build
 2. build the project in release mode
+3. copy and paste the wwwroot directory to bin/Release/net9.0/
 ```

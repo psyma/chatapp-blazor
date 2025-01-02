@@ -54,6 +54,11 @@ builder.Services.AddResponseCompression(opts =>
         ["application/octet-stream"]);
 });
 
+if (!builder.Environment.IsDevelopment())
+{
+    builder.WebHost.UseWebRoot("wwwroot").UseStaticWebAssets(); 
+}
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
